@@ -1,5 +1,5 @@
 ## Switcher
-一个由GO语言编写的端口复用工具，能让HTTP/(HTTPS/SSL/TLS)/SSH/RDP/SOCKS5/HTTPProxy/Other跑在同一个端口上。支持复用本地端口，也支持复用其他IP的端口！
+一个用GO语言编写的端口复用工具，能让HTTP/(HTTPS/SSL/TLS)/SSH/RDP/SOCKS5/HTTPProxy/Other跑在同一个端口上。支持复用本地端口，也支持复用其他IP的端口！
 ## 使用方法
 配置好目录下的config.json后，直接运行就行
 ## 配置
