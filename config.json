@@ -1,0 +1,11 @@
+{
+    "ListenAddr": "0.0.0.0:5294",
+    "HTTPAddr": "",
+	"HTTPHostReplace":"",
+    "SSLAddr": "",
+    "SSHAddr": "",
+    "RDPAddr": "",
+	"SOCKS5Addr": "",
+	"HTTPProxyAddr":"",
+    "DefaultAddr": ""
+}
