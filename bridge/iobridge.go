@@ -36,8 +36,14 @@ func NewClientComming(client net.Conn){
 	if err!=nil{
 		log.Printf("客户端%v处理错误，原因:%s\n",client.RemoteAddr(),err)
 		client.Close()
+		return
 	}
 	testbuf:=buf[:n]
 	connType,addr:=core.GetAddrByRegExp(testbuf,&testbuf)
+	if addr==""{
+		log.Printf("客户端%v处理错误，原因:配置文件中无此协议[%s]的目标中转地址\n",client.RemoteAddr(),connType)
+		client.Close()
+		return
+	}
 	NewBridge(client,addr,connType,testbuf)
 }
