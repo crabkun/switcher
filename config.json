@@ -1,0 +1,14 @@
+[
+  {
+    "name": "test",
+    "listen": ":80",
+    "net": "tcp",
+    "mode": 1,
+    "targets": [
+      {
+        "regexp": "",
+        "address": "127.0.0.1"
+      }
+    ]
+  }
+]
