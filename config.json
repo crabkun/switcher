@@ -1,14 +1,22 @@
-[
-  {
-    "name": "test",
-    "listen": ":80",
-    "net": "tcp",
-    "mode": 1,
-    "targets": [
-      {
-        "regexp": "",
-        "address": "127.0.0.1"
-      }
-    ]
-  }
-]
+{
+  "log_level": "debug",
+  "rules": [
+    {
+      "name": "test",
+      "listen": ":1234",
+      "net": "tcp",
+      "enable_regexp": false,
+      "first_packet_timeout": 5001,
+      "targets": [
+        {
+          "regexp": "^(GET|POST|HEAD|DELETE|PUT|CONNECT|OPTIONS|TRACE)",
+          "address": "127.0.0.1:80"
+        },
+        {
+          "regexp": "^SSH",
+          "address": "127.0.0.1:22"
+        }
+      ]
+    }
+  ]
+}
