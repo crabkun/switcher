@@ -99,7 +99,7 @@
 |HTTP|^(GET\|POST\|HEAD\|DELETE\|PUT\|CONNECT\|OPTIONS\|TRACE)|
 |SSH|^SSH|
 |HTTPS(SSL)|^\x16\x03|
-|RDP|^\x03\x00\x00\x13|
+|RDP|^\x03\x00\x00|
 |SOCKS5|^\x05|
 |HTTP代理|(^CONNECT)\|(Proxy-Connection:)|
 
