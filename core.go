@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"net"
 	"sync"
 	"time"
@@ -21,7 +21,8 @@ func listen(rule *ruleStructure, wg *sync.WaitGroup) {
 		conn, err := listener.Accept()
 		if err != nil {
 			logrus.Errorf("[%s] failed to accept at %s", rule.Name, rule.Listen)
-			break
+			time.Sleep(time.Second * 1)
+			continue
 		}
 		//判断是否是正则模式
 		if rule.EnableRegexp {
@@ -30,7 +31,6 @@ func listen(rule *ruleStructure, wg *sync.WaitGroup) {
 			go handleNormal(conn, rule)
 		}
 	}
-	return
 }
 
 func handleNormal(conn net.Conn, rule *ruleStructure) {

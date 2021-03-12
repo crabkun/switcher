@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"regexp"
 )
@@ -38,7 +38,7 @@ func init() {
 	}
 
 	if len(config.Rules) == 0 {
-		logrus.Fatalf("empty rule", err.Error())
+		logrus.Fatalf("empty rule")
 	}
 	lvl, err := logrus.ParseLevel(config.LogLevel)
 	if err != nil {
