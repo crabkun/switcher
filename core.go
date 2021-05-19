@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"net"
+	"strings"
 	"sync"
 	"time"
 )
@@ -23,6 +24,16 @@ func listen(rule *ruleStructure, wg *sync.WaitGroup) {
 			logrus.Errorf("[%s] failed to accept at %s", rule.Name, rule.Listen)
 			time.Sleep(time.Second * 1)
 			continue
+		}
+		//判断黑名单
+		if len(rule.Blacklist) != 0 {
+			clientIP := conn.RemoteAddr().String()
+			clientIP = clientIP[0:strings.LastIndex(clientIP, ":")]
+			if rule.Blacklist[clientIP] {
+				logrus.Infof("[%s] disconnected ip in blacklist: %s", rule.Name, clientIP)
+				conn.Close()
+				continue
+			}
 		}
 		//判断是否是正则模式
 		if rule.EnableRegexp {

@@ -6,6 +6,7 @@
       "listen": ":1234",
       "enable_regexp": false,
       "first_packet_timeout": 5000,
+      "blacklist": null,
       "targets": [
         {
           "regexp": "^(GET|POST|HEAD|DELETE|PUT|CONNECT|OPTIONS|TRACE)",

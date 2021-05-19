@@ -22,6 +22,10 @@
       "listen": "0.0.0.0:1234",
       "enable_regexp": false,
       "first_packet_timeout": 5000,
+      "blacklist":{
+        "1.2.3.4":true,
+        "114.114.114.114":true
+      },
       "targets": [
         目标配置
       ]
@@ -40,6 +44,7 @@
 2. listen是这个规则监听的地址，0.0.0.0:1234代表监听所有网卡的1234端口
 3. enable_regexp为是否开启正则表达式模式，后面有解释
 4. first_packet_timeout为等待客户端第一个数据包的超时时间(**毫秒**)，仅开启正则表达式模式后有效，后面有解释
+5. blacklist为黑名单IP，在黑名单里面的IP且为true的时候则直接断开链接。如不需要使用黑名单可留null
 5. targets为目标配置数组，看下面
 
 #### 目标配置
@@ -64,6 +69,10 @@
         {
           "name": "普通模式示例",
           "listen": "0.0.0.0:1234",
+          "blacklist":{
+            "1.2.3.4":true,
+            "114.114.114.114":true
+          },
           "targets": [
             {
               "address": "127.0.0.1:80"
@@ -75,6 +84,10 @@
           "listen": "0.0.0.0:5555",
           "enable_regexp": true,
           "first_packet_timeout": 5000,
+          "blacklist":{
+            "1.2.3.4":true,
+            "114.114.114.114":true
+          },
           "targets": [
             {
               "regexp": "^(GET|POST|HEAD|DELETE|PUT|CONNECT|OPTIONS|TRACE)",

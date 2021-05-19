@@ -22,7 +22,8 @@ type ruleStructure struct {
 		regexp  *regexp.Regexp `json:"-"`
 		Address string         `json:"address"`
 	} `json:"targets"`
-	FirstPacketTimeout uint64 `json:"first_packet_timeout"`
+	FirstPacketTimeout uint64          `json:"first_packet_timeout"`
+	Blacklist          map[string]bool `json:"blacklist"`
 }
 
 var config *configStructure
