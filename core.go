@@ -45,6 +45,8 @@ func listen(rule *ruleStructure, wg *sync.WaitGroup) {
 }
 
 func handleNormal(conn net.Conn, rule *ruleStructure) {
+	defer conn.Close()
+
 	var target net.Conn
 	//正常模式下挨个连接直到成功连接
 	for _, v := range rule.Targets {
@@ -70,6 +72,8 @@ func handleNormal(conn net.Conn, rule *ruleStructure) {
 }
 
 func handleRegexp(conn net.Conn, rule *ruleStructure) {
+	defer conn.Close()
+
 	//正则模式下需要客户端的第一个数据包判断特征，所以需要设置一个超时
 	conn.SetReadDeadline(time.Now().Add(time.Millisecond * time.Duration(rule.FirstPacketTimeout)))
 	//获取第一个数据包
