@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"github.com/sirupsen/logrus"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -66,9 +68,11 @@ func handleNormal(conn net.Conn, rule *ruleStructure) {
 	}
 	logrus.Debugf("[%s] handle connection (%s) to target (%s)", rule.Name, conn.RemoteAddr(), target.RemoteAddr())
 
+	defer target.Close()
+
 	//io桥
-	go tcpBridge(conn, target)
-	tcpBridge(target, conn)
+	go io.Copy(conn, target)
+	io.Copy(target, conn)
 }
 
 func handleRegexp(conn net.Conn, rule *ruleStructure) {
@@ -109,12 +113,15 @@ func handleRegexp(conn net.Conn, rule *ruleStructure) {
 	//匹配到了，去除掉刚才设定的超时
 	conn.SetReadDeadline(time.Time{})
 	//把第一个数据包发送给目标
-	target.Write(firstPacket)
+	io.Copy(target, bytes.NewReader(firstPacket))
+
+	defer target.Close()
 
 	//io桥
-	go tcpBridge(conn, target)
-	tcpBridge(target, conn)
+	go io.Copy(conn, target)
+	io.Copy(target, conn)
 }
+
 func waitFirstPacket(conn net.Conn) ([]byte, error) {
 	buf := make([]byte, 2048)
 	n, err := conn.Read(buf)
@@ -122,18 +129,4 @@ func waitFirstPacket(conn net.Conn) ([]byte, error) {
 		return nil, err
 	}
 	return buf[:n], nil
-}
-func tcpBridge(a, b net.Conn) {
-	defer func() {
-		a.Close()
-		b.Close()
-	}()
-	buf := make([]byte, 2048)
-	for {
-		n, err := a.Read(buf)
-		if err != nil {
-			return
-		}
-		b.Write(buf[:n])
-	}
 }
