@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"github.com/sirupsen/logrus"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -66,9 +68,11 @@ func handleNormal(conn net.Conn, rule *ruleStructure) {
 	}
 	logrus.Debugf("[%s] handle connection (%s) to target (%s)", rule.Name, conn.RemoteAddr(), target.RemoteAddr())
 
+	defer target.Close()
+
 	//io桥
-	go tcpBridge(conn, target)
-	tcpBridge(target, conn)
+	go io.Copy(conn, target)
+	io.Copy(target, conn)
 }
 
 func handleRegexp(conn net.Conn, rule *ruleStructure) {
@@ -77,7 +81,8 @@ func handleRegexp(conn net.Conn, rule *ruleStructure) {
 	//正则模式下需要客户端的第一个数据包判断特征，所以需要设置一个超时
 	conn.SetReadDeadline(time.Now().Add(time.Millisecond * time.Duration(rule.FirstPacketTimeout)))
 	//获取第一个数据包
-	firstPacket, err := waitFirstPacket(conn)
+	var firstPacket bytes.Buffer
+	_, err := io.CopyN(&firstPacket, conn, 2048)
 	if err != nil {
 		logrus.Errorf("[%s] unable to handle connection (%s) because failed to get first packet : %s",
 			rule.Name, conn.RemoteAddr(), err.Error())
@@ -87,7 +92,7 @@ func handleRegexp(conn net.Conn, rule *ruleStructure) {
 	var target net.Conn
 	//挨个匹配正则
 	for _, v := range rule.Targets {
-		if !v.regexp.Match(firstPacket) {
+		if !v.regexp.Match(firstPacket.Bytes()) {
 			continue
 		}
 		c, err := net.Dial("tcp", v.Address)
@@ -109,31 +114,11 @@ func handleRegexp(conn net.Conn, rule *ruleStructure) {
 	//匹配到了，去除掉刚才设定的超时
 	conn.SetReadDeadline(time.Time{})
 	//把第一个数据包发送给目标
-	target.Write(firstPacket)
+	io.Copy(target, &firstPacket)
+
+	defer target.Close()
 
 	//io桥
-	go tcpBridge(conn, target)
-	tcpBridge(target, conn)
-}
-func waitFirstPacket(conn net.Conn) ([]byte, error) {
-	buf := make([]byte, 2048)
-	n, err := conn.Read(buf)
-	if err != nil {
-		return nil, err
-	}
-	return buf[:n], nil
-}
-func tcpBridge(a, b net.Conn) {
-	defer func() {
-		a.Close()
-		b.Close()
-	}()
-	buf := make([]byte, 2048)
-	for {
-		n, err := a.Read(buf)
-		if err != nil {
-			return
-		}
-		b.Write(buf[:n])
-	}
+	go io.Copy(conn, target)
+	io.Copy(target, conn)
 }
