@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -29,13 +30,16 @@ type ruleStructure struct {
 var config *configStructure
 
 func init() {
-	buf, err := ioutil.ReadFile("config.json")
+	cfgPath := flag.String("config", "config.json", "config.json file path")
+	flag.Parse()
+
+	buf, err := ioutil.ReadFile(*cfgPath)
 	if err != nil {
-		logrus.Fatalf("failed to load config.json: %s", err.Error())
+		logrus.Fatalf("failed to load config json: %s", err.Error())
 	}
 
 	if err := json.Unmarshal(buf, &config); err != nil {
-		logrus.Fatalf("failed to load config.json: %s", err.Error())
+		logrus.Fatalf("failed to load config json: %s", err.Error())
 	}
 
 	if len(config.Rules) == 0 {
