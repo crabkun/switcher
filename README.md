@@ -27,6 +27,7 @@
         "1.2.3.4":true,
         "114.114.114.114":true
       },
+      "blacklist_file": "/yourblacklistfliepath",
       "targets": [
         目标配置
       ]
