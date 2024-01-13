@@ -28,10 +28,13 @@ func listen(rule *ruleStructure, wg *sync.WaitGroup) {
 			continue
 		}
 		//判断黑名单
-		if len(rule.Blacklist) != 0 {
+		blacklistMutex.Lock()
+		blacklist := rule.blacklistMap
+		blacklistMutex.Unlock()
+		if len(blacklist) != 0 {
 			clientIP := conn.RemoteAddr().String()
 			clientIP = clientIP[0:strings.LastIndex(clientIP, ":")]
-			if rule.Blacklist[clientIP] {
+			if blacklist[clientIP] {
 				logrus.Infof("[%s] disconnected ip in blacklist: %s", rule.Name, clientIP)
 				conn.Close()
 				continue
