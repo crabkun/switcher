@@ -7,6 +7,7 @@
       "enable_regexp": false,
       "first_packet_timeout": 5000,
       "blacklist": null,
+      "blacklist_file": "/yourblacklistfliepath",
       "targets": [
         {
           "regexp": "^(GET|POST|HEAD|DELETE|PUT|CONNECT|OPTIONS|TRACE)",
