@@ -74,6 +74,7 @@
             "1.2.3.4":true,
             "114.114.114.114":true
           },
+         "blacklist_file": "/yourblacklistfliepath",
           "targets": [
             {
               "address": "127.0.0.1:80"
@@ -89,6 +90,7 @@
             "1.2.3.4":true,
             "114.114.114.114":true
           },
+         "blacklist_file": "/yourblacklistfliepath",
           "targets": [
             {
               "regexp": "^(GET|POST|HEAD|DELETE|PUT|CONNECT|OPTIONS|TRACE)",
