@@ -27,6 +27,7 @@
         "1.2.3.4":true,
         "114.114.114.114":true
       },
+      "blacklist_file": "/yourblacklistfliepath",
       "targets": [
         目标配置
       ]
@@ -46,7 +47,8 @@
 3. enable_regexp为是否开启正则表达式模式，后面有解释
 4. first_packet_timeout为等待客户端第一个数据包的超时时间(**毫秒**)，仅开启正则表达式模式后有效，后面有解释
 5. blacklist为黑名单IP，在黑名单里面的IP且为true的时候则直接断开链接。如不需要使用黑名单可留null
-5. targets为目标配置数组，看下面
+6. blacklist_file文件为单行单IP黑名单，多行多IP同时黑名单
+7. targets为目标配置数组，看下面
 
 #### 目标配置
 目标配置有两种模式：**普通模式**和**正则模式**。  
@@ -74,6 +76,7 @@
             "1.2.3.4":true,
             "114.114.114.114":true
           },
+         "blacklist_file": "/yourblacklistfliepath",
           "targets": [
             {
               "address": "127.0.0.1:80"
@@ -89,6 +92,7 @@
             "1.2.3.4":true,
             "114.114.114.114":true
           },
+         "blacklist_file": "/yourblacklistfliepath",
           "targets": [
             {
               "regexp": "^(GET|POST|HEAD|DELETE|PUT|CONNECT|OPTIONS|TRACE)",

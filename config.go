@@ -1,12 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"os"
 	"regexp"
+	"strings"
+	"sync"
+	"time"
 )
 
 type configStructure struct {
@@ -24,10 +29,12 @@ type ruleStructure struct {
 		Address string         `json:"address"`
 	} `json:"targets"`
 	FirstPacketTimeout uint64          `json:"first_packet_timeout"`
-	Blacklist          map[string]bool `json:"blacklist"`
+	BlacklistFile      string          `json:"blacklist_file"`
+	blacklistMap       map[string]bool `json:"-"`
 }
 
 var config *configStructure
+var blacklistMutex = &sync.Mutex{}
 
 func init() {
 	cfgPath := flag.String("config", "config.json", "config.json file path")
@@ -85,5 +92,68 @@ func (c *ruleStructure) verify() error {
 			v.regexp = r
 		}
 	}
+	if c.BlacklistFile != "" {
+		err := loadBlacklist(c.BlacklistFile, &c.blacklistMap)
+		if err != nil {
+			return fmt.Errorf("failed to load blacklist: %s", err.Error())
+		}
+		go watchBlacklist(c.BlacklistFile, &c.blacklistMap)
+	}
 	return nil
+}
+
+func loadBlacklist(path string, blacklist *map[string]bool) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	newBlacklist := make(map[string]bool)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		ip := strings.TrimSpace(scanner.Text())
+		newBlacklist[ip] = true
+	}
+
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	blacklistMutex.Lock()
+	oldBlacklist := *blacklist
+	*blacklist = newBlacklist
+	blacklistMutex.Unlock()
+
+	// 打印出被移除的IP地址
+	for ip := range oldBlacklist {
+		if !newBlacklist[ip] {
+			logrus.Infof("At %s, IP %s move out the Blacklist", time.Now().Format(time.RFC3339), ip)
+		}
+	}
+
+	// 打印出新添加的IP地址
+	for ip := range newBlacklist {
+		if !oldBlacklist[ip] {
+			logrus.Infof("At %s, IP %s add to the Blacklist", time.Now().Format(time.RFC3339), ip)
+		}
+	}
+
+	return nil
+}
+
+
+func watchBlacklist(path string, blacklist *map[string]bool) {
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			err := loadBlacklist(path, blacklist)
+			if err != nil {
+				logrus.Errorf("failed to reload blacklist: %s", err.Error())
+			}
+		}
+	}
 }
