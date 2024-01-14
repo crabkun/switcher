@@ -157,4 +157,3 @@ func watchBlacklist(path string, blacklist *map[string]bool) {
 		}
 	}
 }
-
