@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	VERSION = "2.0"
+	VERSION = "2.1"
 )
 
 func main() {
