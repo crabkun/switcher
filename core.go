@@ -101,7 +101,7 @@ func handleNormal(conn net.Conn, rule *ruleStructure) {
 	wg.Wait()
 
 	trafficMutex.Lock()
-	logrus.Infof("[%s] Connection from IP %s to target %s: This connection traffic: %.2f MB, Total traffic: %.2f MB", rule.Name, conn.RemoteAddr().String(), targetAddress, float64(traffic1 + traffic2) / (1024 * 1024), float64(trafficMap[ip]) / (1024 * 1024))
+	logrus.Infof("[%s] %s to target %s: This connection traffic: %.2f MB, Total traffic: %.2f MB", rule.Name, conn.RemoteAddr().String(), targetAddress, float64(traffic1 + traffic2) / (1024 * 1024), float64(trafficMap[ip]) / (1024 * 1024))
 	trafficMutex.Unlock()
 }
 
@@ -167,7 +167,7 @@ func handleRegexp(conn net.Conn, rule *ruleStructure) {
 	wg.Wait()
 
 	trafficMutex.Lock()
-	logrus.Infof("[%s] Connection from IP %s to target %s: This connection traffic: %.2f MB, Total traffic: %.2f MB", rule.Name, conn.RemoteAddr().String(), targetAddress, float64(traffic1 + traffic2) / (1024 * 1024), float64(trafficMap[ip]) / (1024 * 1024))
+	logrus.Infof("[%s] %s to target %s: This connection traffic: %.2f MB, Total traffic: %.2f MB", rule.Name, conn.RemoteAddr().String(), targetAddress, float64(traffic1 + traffic2) / (1024 * 1024), float64(trafficMap[ip]) / (1024 * 1024))
 	trafficMutex.Unlock()
 }
 
